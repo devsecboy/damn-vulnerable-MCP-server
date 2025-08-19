@@ -13,8 +13,8 @@ This guide provides instructions for setting up and running the Damn Vulnerable 
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/damn-vulnerable-mcs.git
-   cd damn-vulnerable-mcs
+   git clone https://github.com/harishsg993010/damn-vulnerable-MCP-server.git
+   cd damn-vulnerable-MCP-server
    ```
 
 2. Install the required dependencies:
