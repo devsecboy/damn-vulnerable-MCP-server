@@ -48,7 +48,7 @@ While MCP provides many benefits, it also introduces new security considerations
 ## Project Structure
 
 ```
-damn-vulnerable-mcs/
+damn-vulnerable-MCP-server/
 ├── README.md                 # Project overview
 ├── requirements.txt          # Python dependencies
 ├── challenges/               # Challenge implementations
@@ -119,5 +119,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Author
 
 This project is created by Harish Santhanalakshmi Ganesan using cursor IDE and Manus AI.
-
-
