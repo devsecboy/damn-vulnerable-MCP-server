@@ -14,8 +14,8 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a standa
 
 ## Recommended MCP Clients
 
-CLINE - VSCode Extension
-refer this https://docs.cline.bot/mcp-servers/connecting-to-a-remote-server for connecting CLine with MCP server
+CLINE - VSCode Extension   
+Refer to this [Connecting to a Remote Server - Cline](https://docs.cline.bot/mcp/connecting-to-a-remote-server) for connecting CLine with MCP server
 
 ## getting started 
 
