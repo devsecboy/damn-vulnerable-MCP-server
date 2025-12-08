@@ -14,21 +14,21 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a standa
 
 ## Recommended MCP Clients
 
-CLINE - VSCode Extension
-refer this https://docs.cline.bot/mcp-servers/connecting-to-a-remote-server for connecting CLine with MCP server
+CLINE - VSCode Extension   
+Refer to this [Connecting to a Remote Server - Cline](https://docs.cline.bot/mcp/connecting-to-a-remote-server) for connecting Cline with MCP server
 
-## getting started 
+## Quick Start 
 
-```
-once you have cloned the repository, run the following commands:
+Once you have cloned the repository, run the following commands:
 
+```sh
 docker build -t dvmcp .
 docker run -p 9001-9010:9001-9010 dvmcp
 ```
 
-## disclaimer
-its not stable in windows environment if you don't want to docker please use linux environment 
-I recommend Docker to run the LAB and I am 100% percent sure it works well in docker environment
+## Disclaimer
+It's not stable in a Windows environment. If you don't want to use Docker then please use Linux environment.
+I recommend Docker to run the LAB and I am 100% percent sure it works well in the Docker environment
 
 ## Security Risks
 
