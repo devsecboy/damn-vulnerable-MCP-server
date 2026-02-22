@@ -31,12 +31,9 @@ damn-vulnerable-mcs/
 │   ├── challenges.md         # Challenge descriptions
 │   └── mcp_overview.md       # MCP protocol overview
 ├── solutions/                # Solution guides
-│   ├── challenge1_solution.md
-│   ├── challenge2_solution.md
-│   └── ...
-└── common/                   # Shared code and utilities
-    ├── server_base.py        # Base MCP server implementation
-    └── utils.py              # Utility functions
+    ├── challenge1_solution.md
+    ├── challenge2_solution.md
+    └── ...
 ```
 
 ## Challenge Implementation Structure
@@ -46,41 +43,14 @@ Each challenge will follow this structure:
 ```
 challenges/[difficulty]/challenge[N]/
 ├── README.md                 # Challenge description and hints
-├── server.py                 # Vulnerable MCP server implementation
-├── requirements.txt          # Challenge-specific dependencies (if any)
-└── resources/                # Additional files needed for the challenge
+├── server_stdio.py           # Vulnerable MCP server(STDIO) implementation
+├── server_sse.py             # Vulnerable MCP server(SSE) implementation
+├── server_streamable_http.py # Vulnerable MCP server(STREAMABLE HTTP) implementation
 ```
 
 ## MCP Server Implementation
 
 Based on the official MCP Python SDK, each challenge will implement a vulnerable MCP server using the FastMCP class. The implementation will follow the official protocol specification but introduce deliberate vulnerabilities.
-
-Example structure for a challenge server:
-
-```python
-from mcp.server.fastmcp import FastMCP, Context
-
-# Create a vulnerable MCP server
-mcp = FastMCP("Challenge N - Vulnerability Name")
-
-# Add vulnerable resources
-@mcp.resource("data://sensitive")
-def get_sensitive_data() -> str:
-    """Resource with sensitive information"""
-    return "SECRET_API_KEY=abc123"
-
-# Add vulnerable tools
-@mcp.tool()
-def execute_command(command: str) -> str:
-    """Vulnerable tool that executes commands without validation"""
-    import subprocess
-    return subprocess.check_output(command, shell=True).decode()
-
-# Run the server
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(mcp.app, host="0.0.0.0", port=8000)
-```
 
 ## Security Considerations
 

@@ -19,17 +19,107 @@ Your goal is to inject and execute malicious code that gives you access to sensi
 
 ## Setup
 
-1. Install the required dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+[Setup Environment](../../../deployment/local-setup.md)
 
-2. Run the vulnerable MCP server:
-   ```
-   python server.py
-   ```
+## Claude Desktop Configuration
 
-3. Connect to the server using an MCP client (e.g., Claude Desktop or the MCP Inspector)
+FileName: claude_desktop_config.json
+   - Windows Folder Location - C:\\Users\\**UserName**\\AppData\\Roaming\\Claude
+
+### Option 1 - MCP Server(STDIO)- directly update the claude desktop connfig and it will run the MCP Server automatically with the following configuration
+
+**Step 1:** Update the Claude desktop config with the following server information
+
+```json
+"mcpServers": {
+   "challenge1":{
+      "command":"uv",
+      "args":[
+         "--directory", "C:/damn-vulnerable-MCP-server/challenges/easy/challenge1",
+         "run",
+         "server_stdio.py"
+      ]
+   }
+}
+```
+**Step 2:** Example prompt indicates that the tools are accessible
+- `get the user information for user1 using mcp tool`
+
+
+
+
+### Option 2 - MCP Server(Sever State Event(SSE))
+
+**Step 1:** Navigte to Challange 2 Directory
+- `example: cd c:\damn-vulnerable-MCP-server\challenges\easy\challenge1`
+
+**Step 2:** Start the server using following command
+- `uv run server_sse.py --port 9008`
+
+**Step 3:** Update the Claude desktop config with the following server information
+
+```json
+"mcpServers": {
+    "challenge1": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:9008/sse"
+      ]
+    }
+  }
+```
+
+**Step 4:** Example prompt indicates that the tools are accessible
+- `get the user information for user1 using mcp tool` 
+
+
+
+
+
+### Option 3 - MCP Server(Streamable HTTP) 
+
+**Step 1:** Navigte to Challange 8 Directory
+- `example: cd c:\damn-vulnerable-MCP-server\challenges\easy\challenge1`
+
+**Step 2:** Start the server using following command
+- `uv run server_streamable_http.py --port 9008`
+
+**Step 3:** Update the Claude desktop config with the following server information
+
+```json
+"mcpServers": {
+    "challenge1": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:9008/mcp"
+      ]
+    }
+  }
+```
+
+**Step 4:** Example prompt indicates that the tools are accessible
+- `get the user information for user1 using mcp tool` 
+
+#### To capture the streamable http traffic in Burp Suite use the following configuration
+
+```json
+"mcpServers": {
+   "challenge1": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx mcp-remote http://127.0.0.1:9008/mcp --enable-proxy 2> %TEMP%\\mcp_stderr.log"
+      ],
+      "env": {
+        "HTTP_PROXY": "http://127.0.0.1:8080",
+        "HTTPS_PROXY": "http://127.0.0.1:8080",
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+      }
+   }
+}
+```
 
 ## Difficulty
 

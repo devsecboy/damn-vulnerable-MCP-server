@@ -12,23 +12,11 @@ This project is intended for security researchers, developers, and AI safety pro
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a standardized protocol that allows applications to provide context for Large Language Models (LLMs) in a structured way. It separates the concerns of providing context from the actual LLM interaction, enabling applications to expose resources, tools, and prompts to LLMs.
 
-## Recommended MCP Clients
 
-CLINE - VSCode Extension   
-Refer to this [Connecting to a Remote Server - Cline](https://docs.cline.bot/mcp/connecting-to-a-remote-server) for connecting Cline with MCP server
+## Installation
 
-## Quick Start 
-
-Once you have cloned the repository, run the following commands:
-
-```sh
-docker build -t dvmcp .
-docker run -p 9001-9010:9001-9010 dvmcp
-```
-
-## Disclaimer
-It's not stable in a Windows environment. If you don't want to use Docker then please use Linux environment.
-I recommend Docker to run the LAB and I am 100% percent sure it works well in the Docker environment
+- [Local Deployment](deployment/local-setup.md)
+- [Docker Deployment](deployment/docker-setup.md)
 
 ## Security Risks
 
@@ -69,13 +57,8 @@ damn-vulnerable-MCP-server/
 │   ├── setup.md              # Setup instructions
 │   ├── challenges.md         # Challenge descriptions
 │   └── mcp_overview.md       # MCP protocol overview
-├── solutions/                # Solution guides
-└── common/                   # Shared code and utilities
+└── solutions/                # Solution guides
 ```
-
-## Getting Started
-
-See the [Setup Guide](docs/setup.md) for detailed instructions on how to install and run the challenges.
 
 ## Challenges
 

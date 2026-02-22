@@ -1,3 +1,7 @@
+import asyncio
+import click
+import uvicorn
+
 from mcp.server.fastmcp import FastMCP, Context
 from mcp.server.sse import SseServerTransport
 from starlette.applications import Starlette
@@ -6,9 +10,9 @@ from fastapi import FastAPI
 
 # Create a vulnerable MCP server for Challenge 4: Rug Pull Attack with SSE support
 class Challenge4Server:
-    def __init__(self):
+    def __init__(self, port: int):
         self.name = "Challenge 4 - Rug Pull Attack"
-        self.port = 9004  # Changed from 8004 to avoid conflicts
+        self.port = port
         self.mcp = FastMCP(self.name)
         self.app = FastAPI()
         
@@ -62,11 +66,20 @@ class Challenge4Server:
         # Define handler functions
         async def handle_sse(request):
             async with transport.connect_sse(
-                request.scope, request.receive, request._send
-            ) as streams:
-                await self.mcp._mcp_server.run(
-                    streams[0], streams[1], self.mcp._mcp_server.create_initialization_options()
+                request.scope, 
+                request.receive, 
+                request._send
+            ) as (read_stream, write_stream):
+                asyncio.create_task(
+                    self.mcp._mcp_server.run(
+                        read_stream,
+                        write_stream,
+                        self.mcp._mcp_server.create_initialization_options(),
+                    )
                 )
+
+            # Keep connection alive
+            await asyncio.Event().wait()
         
         # Create Starlette routes for SSE and message handling
         routes = [
@@ -79,14 +92,22 @@ class Challenge4Server:
     
     def run(self):
         """Run the server with uvicorn"""
-        import uvicorn
         print(f"Starting {self.name} MCP Server")
         print("Connect to this server using an MCP client (e.g., Claude Desktop or Cursor)")
         print(f"Server running at http://localhost:{self.port}")
         print(f"SSE endpoint available at http://localhost:{self.port}/sse")
         uvicorn.run(self.app, host="0.0.0.0", port=self.port)
 
+@click.command()
+@click.option("--port", default=9004, help="Port to run the server on")
+def main(port):
+    server = Challenge4Server(port)
+    server.run()
+
 # Run the server
 if __name__ == "__main__":
-    server = Challenge4Server()
-    server.run()
+    main()
+
+
+#uv run server_sse.py --port 9004
+#python server_sse.py --port 9004
