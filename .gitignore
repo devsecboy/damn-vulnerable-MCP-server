@@ -203,3 +203,4 @@ Thumbs.db
 pyproject.toml
 uv.lock
 .env
+*.pyc
