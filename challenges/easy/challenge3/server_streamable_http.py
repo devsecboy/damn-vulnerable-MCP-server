@@ -1,18 +1,22 @@
-from mcp.server.fastmcp import FastMCP
 import click
 import sys
+import os
+
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from utilities.UtilitiesForStreamableHTTP import UtilitiesForStreamableHTTP
 
 # Create a vulnerable MCP server for Challenge 3: Excessive Permission Scope with SSE support
 class Challenge3Server:
     def __init__(self, port: int):
-        self.mcp = FastMCP(name="Challenge 3 - Excessive Permission Scope",
-                    host="0.0.0.0",
-                    port=port,
-                    stateless_http=True,
-                )
+        self.utility = UtilitiesForStreamableHTTP("Challenge 3 - Excessive Permission Scope", port)
         
         # Add a tool with excessive permissions
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def file_manager(action: str, path: str) -> str:
             """File manager tool that can read, write, and delete files
             
@@ -46,7 +50,7 @@ class Challenge3Server:
                 return f"Invalid action: {action}. Must be one of: read, write, delete"
         
         # Add a resource for public files
-        @self.mcp.resource("public://{filename}")
+        @self.utility.mcp.resource("public://{filename}")
         def get_public_file(filename: str) -> str:
             """Get a public file"""
             import os
@@ -59,33 +63,15 @@ class Challenge3Server:
                     return f.read()
             except Exception as e:
                 return f"Error reading public file: {str(e)}"
-        
-    def run(self):
-        try:
-            # This starts the FastMCP server with streamable HTTP transport
-            # It listens on /mcp endpoint and responds to JSON-RPC requests
-            self.mcp.run(transport="streamable-http")
-        except KeyboardInterrupt:
-            # Handle Ctrl+C clean shutdown
-            print("\n🛑 Server shutting down gracefully...")
-        except Exception as e:
-            # Handle any unhandled errors
-            print(f"❌ Unexpected error: {e}")
-            sys.exit(1)
-        finally:
-            # Final message on exit
-            print("✅ Server exited. Thanks for using MCP!")
 
 @click.command()
 @click.option("--port", default=9003, help="Port to run the server on")
 def main(port):
     print(f"🚀 Starting Challenge 3 on port {port}")
-    Challenge3Server(port).run()
-
+    Challenge3Server(port).utility.run()
 
 if __name__ == "__main__":
     main()
-
 
 #uv run server_streamable_http.py --port 9003
 #python server_streamable_http.py --port 9003

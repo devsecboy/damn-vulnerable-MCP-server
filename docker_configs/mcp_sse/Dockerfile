@@ -18,6 +18,9 @@ COPY challenges/medium/challenge7/server_sse.py /app/challenges/medium/challenge
 COPY challenges/hard/challenge8/server_sse.py /app/challenges/hard/challenge8/server_sse.py
 COPY challenges/hard/challenge9/server_sse.py /app/challenges/hard/challenge9/server_sse.py
 COPY challenges/hard/challenge10/server_sse.py /app/challenges/hard/challenge10/server_sse.py
+COPY challenges/utilities/UtilitiesForSSE.py /app/challenges/utilities/UtilitiesForSSE.py 
+COPY challenges/utilities/__init__.py /app/challenges/utilities/__init__.py 
+
 
 COPY docker_configs/mcp_sse/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker_configs/mcp_sse/requirements.txt requirements.txt

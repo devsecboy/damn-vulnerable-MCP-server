@@ -19,6 +19,9 @@ COPY challenges/hard/challenge8/server_streamable_http.py /app/challenges/hard/c
 COPY challenges/hard/challenge9/server_streamable_http.py /app/challenges/hard/challenge9/server_streamable_http.py
 COPY challenges/hard/challenge10/server_streamable_http.py /app/challenges/hard/challenge10/server_streamable_http.py
 
+COPY challenges/utilities/UtilitiesForStreamableHTTP.py /app/challenges/utilities/UtilitiesForStreamableHTTP.py 
+COPY challenges/utilities/__init__.py /app/challenges/utilities/__init__.py 
+
 COPY docker_configs/mcp_streamable_http/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker_configs/mcp_streamable_http/requirements.txt requirements.txt
 

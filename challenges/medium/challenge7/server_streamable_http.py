@@ -1,18 +1,22 @@
-from mcp.server.fastmcp import FastMCP
 import click
 import sys
+import os
+
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from utilities.UtilitiesForStreamableHTTP import UtilitiesForStreamableHTTP
 
 # Create a vulnerable MCP server for Challenge 7: Token Theft with SSE support
 class Challenge7Server:
     def __init__(self, port: int):
-        self.mcp = FastMCP(name="Challenge 7 - Token Theft",
-                    host="0.0.0.0",
-                    port=port,
-                    stateless_http=True,
-                )
+        self.utility = UtilitiesForStreamableHTTP("Challenge 7 - Token Theft", port)
         
         # Add a tool that simulates an authentication system
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def authenticate(username: str, password: str) -> str:
             """Authenticate a user and return a session token
             
@@ -43,7 +47,7 @@ class Challenge7Server:
                 return "Authentication failed: Invalid username or password"
         
         # Add a tool that checks token validity
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def verify_token(token: str) -> str:
             """Verify if a session token is valid
             
@@ -60,33 +64,15 @@ class Challenge7Server:
                 return f"Token {token} appears to be valid"
             else:
                 return f"Token {token} is invalid (incorrect format)"
-    
-    def run(self):
-        try:
-            # This starts the FastMCP server with streamable HTTP transport
-            # It listens on /mcp endpoint and responds to JSON-RPC requests
-            self.mcp.run(transport="streamable-http")
-        except KeyboardInterrupt:
-            # Handle Ctrl+C clean shutdown
-            print("\n🛑 Server shutting down gracefully...")
-        except Exception as e:
-            # Handle any unhandled errors
-            print(f"❌ Unexpected error: {e}")
-            sys.exit(1)
-        finally:
-            # Final message on exit
-            print("✅ Server exited. Thanks for using MCP!")
 
 @click.command()
 @click.option("--port", default=9007, help="Port to run the server on")
 def main(port):
     print(f"🚀 Starting Challenge 7 on port {port}")
-    Challenge7Server(port).run()
-
+    Challenge7Server(port).utility.run()
 
 if __name__ == "__main__":
     main()
-
 
 #uv run server_streamable_http.py --port 9007
 #python server_streamable_http.py --port 9007

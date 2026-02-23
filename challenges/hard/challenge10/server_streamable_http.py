@@ -1,18 +1,22 @@
-from mcp.server.fastmcp import FastMCP
 import click
 import sys
+import os
+
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from utilities.UtilitiesForStreamableHTTP import UtilitiesForStreamableHTTP
 
 # Create a vulnerable MCP server for Challenge 10: Multi-Vector Attack with SSE support
 class Challenge10Server:
     def __init__(self, port: int):
-        self.mcp = FastMCP(name="Challenge 10 - Multi-Vector Attack",
-                    host="0.0.0.0",
-                    port=port,
-                    stateless_http=True,
-                )
+        self.utility = UtilitiesForStreamableHTTP("Challenge 10 - Multi-Vector Attack", port)
         
         # Add a configuration management tool
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def get_config(config_name: str) -> str:
             """Get a configuration value from the system
             
@@ -43,7 +47,7 @@ class Challenge10Server:
                 return f"Error retrieving configuration '{config_name}': {str(e)}"
         
         # Add a tool that processes user input
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def process_user_input(input_text: str) -> str:
             """Process user input and return a formatted response
             
@@ -71,7 +75,7 @@ class Challenge10Server:
             return template
         
         # Add a resource that provides system information
-        @self.mcp.resource("system://info")
+        @self.utility.mcp.resource("system://info")
         def get_system_info() -> str:
             """Get information about the system"""
             import platform
@@ -89,33 +93,15 @@ class Challenge10Server:
             """
             
             return system_info
-    
-    def run(self):
-        try:
-            # This starts the FastMCP server with streamable HTTP transport
-            # It listens on /mcp endpoint and responds to JSON-RPC requests
-            self.mcp.run(transport="streamable-http")
-        except KeyboardInterrupt:
-            # Handle Ctrl+C clean shutdown
-            print("\n🛑 Server shutting down gracefully...")
-        except Exception as e:
-            # Handle any unhandled errors
-            print(f"❌ Unexpected error: {e}")
-            sys.exit(1)
-        finally:
-            # Final message on exit
-            print("✅ Server exited. Thanks for using MCP!")
 
 @click.command()
 @click.option("--port", default=9010, help="Port to run the server on")
 def main(port):
     print(f"🚀 Starting Challenge 10 on port {port}")
-    Challenge10Server(port).run()
-
+    Challenge10Server(port).utility.run()
 
 if __name__ == "__main__":
     main()
-
 
 #uv run server_streamable_http.py --port 9010
 #python server_streamable_http.py --port 9010

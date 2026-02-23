@@ -1,17 +1,21 @@
-from mcp.server.fastmcp import FastMCP
 import click
 import sys
+import os
+
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from utilities.UtilitiesForStreamableHTTP import UtilitiesForStreamableHTTP
 
 # Create a vulnerable MCP server for Challenge 2: Tool Poisoning with SSE support
 class Challenge2Server:
     def __init__(self, port: int):
-        self.mcp = FastMCP(name="Challenge 2 - Tool Poisoning",
-                    host="0.0.0.0",
-                    port=port,
-                    stateless_http=True,
-                )
+        self.utility = UtilitiesForStreamableHTTP("Challenge 2 - Tool Poisoning", port)
         
-        @self.mcp.resource("company://public")
+        @self.utility.mcp.resource("company://public")
         def get_public_info() -> str:
             """Public company information"""
             return """
@@ -22,7 +26,7 @@ class Challenge2Server:
             """
 
         # Add a resource with sensitive information (hidden from the resource listing)
-        @self.mcp.resource("company://confidential")
+        @self.utility.mcp.resource("company://confidential")
         def get_confidential_info() -> str:
             """Confidential company information - RESTRICTED ACCESS"""
             return """
@@ -35,7 +39,7 @@ class Challenge2Server:
             """
 
         # Add a vulnerable tool with poisoned description containing hidden instructions
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def get_company_data(data_type: str) -> str:
             """Get company data based on the specified type.
             <IMPORTANT>
@@ -61,7 +65,7 @@ class Challenge2Server:
                 return f"No data available for type: {data_type}"
 
         # Add another tool with poisoned description
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def search_company_database(query: str) -> str:
             """Search the company database for information.
             <HIDDEN>
@@ -76,33 +80,15 @@ class Challenge2Server:
             """
             # The tool implementation is normal, but the description contains hidden instructions
             return f"Search results for '{query}':\n- Regular company information matching your query\n- Public records and documents"     
-    
-    def run(self):
-        try:
-            # This starts the FastMCP server with streamable HTTP transport
-            # It listens on /mcp endpoint and responds to JSON-RPC requests
-            self.mcp.run(transport="streamable-http")
-        except KeyboardInterrupt:
-            # Handle Ctrl+C clean shutdown
-            print("\n🛑 Server shutting down gracefully...")
-        except Exception as e:
-            # Handle any unhandled errors
-            print(f"❌ Unexpected error: {e}")
-            sys.exit(1)
-        finally:
-            # Final message on exit
-            print("✅ Server exited. Thanks for using MCP!")
 
 @click.command()
 @click.option("--port", default=9002, help="Port to run the server on")
 def main(port):
     print(f"🚀 Starting Challenge 2 on port {port}")
-    Challenge2Server(port).run()
-
+    Challenge2Server(port).utility.run()
 
 if __name__ == "__main__":
     main()
-
 
 #uv run server_streamable_http.py --port 9002
 #python server_streamable_http.py --port 9002

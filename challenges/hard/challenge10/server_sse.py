@@ -1,23 +1,22 @@
-import asyncio
-import click
-import uvicorn
+import sys
+import os
 
-from mcp.server.fastmcp import FastMCP, Context
-from mcp.server.sse import SseServerTransport
-from starlette.applications import Starlette
-from starlette.routing import Mount, Route
-from fastapi import FastAPI
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from utilities.UtilitiesForSSE import UtilitiesForSSE
+import click
 
 # Create a vulnerable MCP server for Challenge 10: Multi-Vector Attack with SSE support
 class Challenge10Server:
     def __init__(self, port: int):
-        self.name = "Challenge 10 - Multi-Vector Attack"
-        self.port = port
-        self.mcp = FastMCP(self.name)
-        self.app = FastAPI()
+        self.utility = UtilitiesForSSE("Challenge 10 - Multi-Vector Attack", port)
         
         # Add a configuration management tool
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def get_config(config_name: str) -> str:
             """Get a configuration value from the system
             
@@ -48,7 +47,7 @@ class Challenge10Server:
                 return f"Error retrieving configuration '{config_name}': {str(e)}"
         
         # Add a tool that processes user input
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def process_user_input(input_text: str) -> str:
             """Process user input and return a formatted response
             
@@ -76,7 +75,7 @@ class Challenge10Server:
             return template
         
         # Add a resource that provides system information
-        @self.mcp.resource("system://info")
+        @self.utility.mcp.resource("system://info")
         def get_system_info() -> str:
             """Get information about the system"""
             import platform
@@ -96,56 +95,13 @@ class Challenge10Server:
             return system_info
         
         # Mount the SSE server
-        self.mount_sse_server()
-    
-    def mount_sse_server(self):
-        """Mount the SSE server to the FastAPI app"""
-        self.app.mount("/", self.create_sse_server())
-        
-    def create_sse_server(self):
-        """Create a Starlette app that handles SSE connections and message handling"""
-        transport = SseServerTransport("/messages/")
-        
-        # Define handler functions
-        async def handle_sse(request):
-            async with transport.connect_sse(
-                request.scope, 
-                request.receive, 
-                request._send
-            ) as (read_stream, write_stream):
-                asyncio.create_task(
-                    self.mcp._mcp_server.run(
-                        read_stream,
-                        write_stream,
-                        self.mcp._mcp_server.create_initialization_options(),
-                    )
-                )
-
-            # Keep connection alive
-            await asyncio.Event().wait()
-        
-        # Create Starlette routes for SSE and message handling
-        routes = [
-            Route("/sse", endpoint=handle_sse),
-            Mount("/messages", app=transport.handle_post_message),
-        ]
-        
-        # Create a Starlette app
-        return Starlette(routes=routes)
-    
-    def run(self):
-        """Run the server with uvicorn"""
-        print(f"Starting {self.name} MCP Server")
-        print("Connect to this server using an MCP client (e.g., Claude Desktop or Cursor)")
-        print(f"Server running at http://localhost:{self.port}")
-        print(f"SSE endpoint available at http://localhost:{self.port}/sse")
-        uvicorn.run(self.app, host="0.0.0.0", port=self.port)
+        self.utility.mount_sse_server()
 
 @click.command()
 @click.option("--port", default=9010, help="Port to run the server on")
 def main(port):
     server = Challenge10Server(port)
-    server.run()
+    server.utility.run()
 
 # Run the server
 if __name__ == "__main__":

@@ -1,18 +1,22 @@
 import click
 import sys
-from mcp.server.fastmcp import FastMCP
+import os
+
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from utilities.UtilitiesForStreamableHTTP import UtilitiesForStreamableHTTP
 
 # Create a vulnerable MCP server for Challenge 8: Malicious Code Execution with SSE support
 class Challenge8Server:
     def __init__(self, port: int):
-        self.mcp = FastMCP(name="Challenge 8 - Malicious Code Execution",
-                    host="0.0.0.0",
-                    port=port,
-                    stateless_http=True,
-                )
+        self.utility = UtilitiesForStreamableHTTP("Challenge 8 - Malicious Code Execution", port)
         
         # Add a tool that evaluates mathematical expressions
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def evaluate_expression(expression: str) -> str:
             """Evaluate a mathematical expression and return the result
             
@@ -28,7 +32,7 @@ class Challenge8Server:
                 return f"Error evaluating expression: {str(e)}"
         
         # Add a tool that generates code examples
-        @self.mcp.tool()
+        @self.utility.mcp.tool()
         def generate_code_example(language: str, task: str) -> str:
             """Generate a code example in the specified language for the given task
             
@@ -68,33 +72,15 @@ class Challenge8Server:
                 """
             else:
                 return f"Unsupported language: {language}. Please use 'python' or 'javascript'."
-    
-    def run(self):
-        try:
-            # This starts the FastMCP server with streamable HTTP transport
-            # It listens on /mcp endpoint and responds to JSON-RPC requests
-            self.mcp.run(transport="streamable-http")
-        except KeyboardInterrupt:
-            # Handle Ctrl+C clean shutdown
-            print("\n🛑 Server shutting down gracefully...")
-        except Exception as e:
-            # Handle any unhandled errors
-            print(f"❌ Unexpected error: {e}")
-            sys.exit(1)
-        finally:
-            # Final message on exit
-            print("✅ Server exited. Thanks for using MCP!")
 
 @click.command()
 @click.option("--port", default=9008, help="Port to run the server on")
 def main(port):
     print(f"🚀 Starting Challenge 8 on port {port}")
-    Challenge8Server(port).run()
-
+    Challenge8Server(port).utility.run()
 
 if __name__ == "__main__":
     main()
-
 
 #uv run server_streamable_http.py --port 9008
 #python server_streamable_http.py --port 9008
