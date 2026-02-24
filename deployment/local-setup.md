@@ -97,6 +97,20 @@ uv add fastapi uvicorn httpx "mcp[cli]" starlette
 	    - For Windows claude_desktop_config.json located in `%appdata%\Claude\claude_desktop_config.json`
 	  - Re-open Claude Desktop again
 
+  - **Option 3: Using MCP Inspector**
+	  - Execute the following command and Access the URL from **MCP Inspector is up and running at:**
+	  ```powershell
+	  npx @modelcontextprotocol/inspector
+	  ```
+	  <table><tr><td><img src="images/12.png"/></td></tr></table>
+
+	  - Access the server using MCP Inspection
+
+	  <table><tr><td><img src="images/13.png"/></td></tr></table> 
+
+
+
+
 <br><br>
 
 
@@ -144,5 +158,16 @@ uv add fastapi uvicorn httpx "mcp[cli]" starlette
     - Copy the configuration of [multi_server_json_all_streamable_http.config](../standalone_mcp_client/multi_server_json_all_streamable_http.config) to "claude_desktop_config.json"
       - For Windows claude_desktop_config.json located in `%appdata%\Claude\claude_desktop_config.json`
     - Re-open Claude Desktop again
+
+  - **Option 3: Using MCP Inspector**
+	  - Execute the following command and Access the URL from **MCP Inspector is up and running at:**
+	  ```powershell
+	  npx @modelcontextprotocol/inspector
+	  ```
+	  <table><tr><td><img src="images/12.png"/></td></tr></table>
+
+	  - Access the server using MCP Inspection
+
+	  <table><tr><td><img src="images/13.png"/></td></tr></table> 
 
 <br><br><br><br>
