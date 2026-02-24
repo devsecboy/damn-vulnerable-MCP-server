@@ -55,7 +55,7 @@ docker build -f docker_configs/mcp_streamable_http/Dockerfile -t mcp-streamable-
 <table><tr><td><img src="images/10.png"/></td></tr></table>
 
 ```powershell
-docker run -p 9001-9010:9001-9010 mcp-sse
+docker run -p 9001-9010:9001-9010 mcp-streamable-http
 ```
 
 <table><tr><td><img src="images/11.png"/></td></tr></table>
